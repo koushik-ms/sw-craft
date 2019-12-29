@@ -1,1 +1,3 @@
-build/
+
+# Ignore all folders named build in tdd-samples
+tdd-samples/*/build/
