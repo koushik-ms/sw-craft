@@ -27,6 +27,13 @@ make
 make test
 ```
 
+To run the tests with the test outputs displayed on the console, just run:
+```
+make && make CTEST_OUTPUT_ON_FAILURE=1 test
+```
+
+The included watch.sh script provides a way to continuously monitor the directory for any changes and automatically re-build and run tests when any files in the directory tree is modified on disk.
+
 ### Windows
 
 If you have Visual Studio, just launch the CMake Gui tool and select the project source folder and a build directory and which version of Visual Studio you want to target.
