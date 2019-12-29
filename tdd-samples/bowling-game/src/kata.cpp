@@ -72,6 +72,9 @@ TEST_CASE_FIXTURE(GameTest, "Bowling game kata") {
         roll(20, 3);
         CHECK(60 == g.score());
     }
+}
+
+TEST_CASE_FIXTURE(GameTest, "Bowling game kata") {
     SUBCASE("Can score a game with a spare and a two") {
         rollSpare();
         roll(1, 2);
@@ -95,3 +98,9 @@ TEST_CASE_FIXTURE(GameTest, "Bowling game kata") {
     }
 }
 
+TEST_CASE_FIXTURE(GameTest, "Bowling game kata" * doctest::skip(true)) {
+    SUBCASE("Incorrect shd fail") {
+        roll(12, 1);
+        CHECK(33 == g.score());
+    }
+}
