@@ -27,6 +27,11 @@ make
 make test
 ```
 
+To get details on test failure run with `CTEST_OUTPUT_ON_FAILURE` set to `1`:
+```
+make && make CTEST_OUTPUT_ON_FAILURE=1 test
+```
+
 ### Windows
 
 If you have Visual Studio, just launch the CMake Gui tool and select the project source folder and a build directory and which version of Visual Studio you want to target.
