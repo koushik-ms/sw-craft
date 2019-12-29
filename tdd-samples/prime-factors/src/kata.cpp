@@ -5,11 +5,15 @@
     Prime factors kata
 */
 using std::vector;
+// @todo: isDivisible doesn't read well. Doesn't convey intent.
+bool isDivisible(unsigned dividend, unsigned divisor) { return (dividend % divisor) == 0; }
+
 vector<unsigned> primeFactors(unsigned number) {
     std::vector<unsigned> result{};
     if(number <= 3) return result;
-    if ((number%2) == 0) result.push_back(2);
-    if ((number%3) == 0) result.push_back(3);
+    for(auto const& factor: {2, 3}) {
+        if(isDivisible(number, factor)) result.push_back(factor);
+    }
     return result;
 }
 
