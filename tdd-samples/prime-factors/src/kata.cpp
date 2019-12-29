@@ -6,8 +6,11 @@
 */
 using std::vector;
 vector<unsigned> primeFactors(unsigned number) {
-    if (number == 4) return {2};
-    return {};
+    std::vector<unsigned> result{};
+    if(number <= 3) return result;
+    if ((number%2) == 0) result.push_back(2);
+    if ((number%3) == 0) result.push_back(3);
+    return result;
 }
 
 template <typename T>
@@ -26,6 +29,11 @@ std::ostream& operator<< (std::ostream &os, vector<T> const& vec) {
 TEST_CASE("Prime factors basics") {
     SUBCASE("Prime Factors of 1 is empty list") {
         auto x = primeFactors(1);
+        auto expected = std::vector<unsigned>();
+        CHECK(x == expected);
+    }
+    SUBCASE("Prime Factors of 2 is empty list") {
+        auto x = primeFactors(2);
         auto expected = std::vector<unsigned>();
         CHECK(x == expected);
     }
