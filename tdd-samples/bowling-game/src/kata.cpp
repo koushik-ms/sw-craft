@@ -25,13 +25,13 @@ class Game {
         unsigned firstInFrame{0};
         for(unsigned frame = 0; frame < 10; ++frame) {
             if(isStrike(firstInFrame)) {
-                score += 10 + throws[firstInFrame+1] + throws[firstInFrame+2];
+                score += 10 + nextTwoThrows(firstInFrame);
                 firstInFrame += 1;
             } else if(isSpare(firstInFrame)) {
-                score += 10 + throws[firstInFrame+2];
+                score += 10 + throwAfterSpare(firstInFrame);
                 firstInFrame += 2;
             } else {
-                score += throws[firstInFrame] + throws[firstInFrame+1];
+                score += frameTotal(firstInFrame);
                 firstInFrame += 2;
             }
         }
@@ -40,6 +40,9 @@ class Game {
     private:
     bool isSpare(unsigned index) { return throws[index] + throws[index+1] == 10; }
     bool isStrike(unsigned index) { return throws[index] == 10; }
+    unsigned nextTwoThrows(unsigned index) { return throws[index+1] + throws[index+2]; }
+    unsigned frameTotal(unsigned index) { return throws[index] + throws[index+1]; }
+    unsigned throwAfterSpare(unsigned index) { return throws[index+2]; }
     std::array<unsigned, 21> throws{};
     unsigned currentThrow{0};
 };
@@ -52,6 +55,7 @@ class GameTest {
         }
     }
     void rollSpare() { g.roll(5); g.roll(5); }
+    void rollStrike() { g.roll(10); }
     Game g;
 };
 
@@ -70,7 +74,7 @@ TEST_CASE_FIXTURE(GameTest, "Bowling game kata") {
     }
     SUBCASE("Can score a game with a spare and a two") {
         rollSpare();
-        g.roll(2);
+        roll(1, 2);
         roll(17, 0);
         CHECK(14 == g.score());
     }
@@ -79,11 +83,15 @@ TEST_CASE_FIXTURE(GameTest, "Bowling game kata") {
         CHECK(150 == g.score());
     }
     SUBCASE("Can score strike + 4 + 2") {
-        roll(1, 10);
+        rollStrike();
         roll(1, 4);
         roll(1, 2);
         roll(16, 0);
         CHECK(22 == g.score());
+    }
+    SUBCASE("Can score a perfect game") {
+        roll(12, 10);
+        CHECK(300 == g.score());
     }
 }
 
