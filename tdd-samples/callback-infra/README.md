@@ -18,7 +18,6 @@ These are things to do for later. Feel free to start working on any of these aft
 * Move doctest out of the code-base (and as an external dependency)
 
 
-
 CMake Setup
 ==========
 

@@ -70,3 +70,16 @@ TEST_CASE("CInShd allow registration and deregistration. Call repeatedly until d
     CHECK(minLatency >= (period-tick));
     CHECK(maxLatency <= (period+tick));
 }
+
+TEST_CASE("CInShd start calling after registration") {}
+TEST_CASE("CInShd stop calling after de-registration") {}
+TEST_CASE("CInShd shall call within period +/- clock-tick for various clock-ticks") {}
+TEST_CASE("CInShd disallow registration when period is not multiple of tick") {}
+
+/*
+ * Things to do:
+ * 
+ * 0. Add test-case descriptions for all acceptance test-cases.  
+ * 1. Refactor the test files and production code into separate files
+ * 2. Separate acceptance test and provide build support for proposed top-level design
+ */
