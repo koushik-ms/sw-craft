@@ -1,24 +1,13 @@
 #include <iostream>
-#include <chrono>
 #include <thread>
+#include <algorithm>
 #include <numeric>
 
-class CallbackInfrastructure {
-    public:
-    template<typename A, typename B>
-    int registerCallback(A duration, B callback) { return 0; };
-    void deregisterCallback(int id) {};
-};
+#include "solution.h"
 
-using Instant = std::chrono::time_point<std::chrono::system_clock>;
-using Duration = std::chrono::system_clock::duration;
-auto Now() { return std::chrono::system_clock::now(); }
-
-
-//---
-#include <algorithm>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
+
 TEST_CASE("CInShd allow registration of timed callbacks") {
     using namespace std::chrono_literals;
     auto period = 500ms;
@@ -79,7 +68,7 @@ TEST_CASE("CInShd disallow registration when period is not multiple of tick") {}
 /*
  * Things to do:
  * 
- * 0. Add test-case descriptions for all acceptance test-cases.  
- * 1. Refactor the test files and production code into separate files
+ * [X] Add test-case descriptions for all acceptance test-cases.  
+ * [X] Refactor the test files and production code into separate files
  * 2. Separate acceptance test and provide build support for proposed top-level design
  */

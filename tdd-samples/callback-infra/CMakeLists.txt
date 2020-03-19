@@ -22,16 +22,17 @@ ENDIF()
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 ####################################################
-# Add Unit Tests file names (without .cpp extension)
+# Add Acceptance Tests file names (without .cpp extension)
 ####################################################
-list(APPEND UNIT_TESTS
-    kata
+list(APPEND ACC_TESTS
+    aTest
 )
 
 ####################################################
 # Create executable for each test
 ####################################################
-foreach(TEST ${UNIT_TESTS})
-    add_executable(${TEST} "${CMAKE_SOURCE_DIR}/src/${TEST}.cpp")
-    add_test(${TEST} ${TEST})
+foreach(TEST ${ACC_TESTS})
+    add_executable(acc_${TEST} "${CMAKE_SOURCE_DIR}/acc/${TEST}.cpp")
+    # At some point this will depend on and link with a library that has the solution (production code)
+    add_test(acc_${TEST} acc_${TEST})
 endforeach()

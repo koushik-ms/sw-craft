@@ -60,3 +60,11 @@ If you have Visual Studio, just launch the CMake Gui tool and select the project
 
 After pressing the *Generate*  button, you can open the Visual Studio *.sln file generated in the build directory you have previously selected.
 
+# Repo layout
+Following is the proposed package layout.
+acc - contains acceptance tests. Each cpp file is an individual test which is fully self-contained (and compiled and executed independently).
+include - contains public header files. acceptance tests depend on this.
+src - contains the solution (production code)
+watch.sh - contains a wrapper script that can be used for rapid test execution feedback during development.
+            It watches the source-tree and runs the test targets whenever any file is saved (even README.md).
+
