@@ -9,6 +9,7 @@ enable_testing()
 ####################################################
 set(CXX_STANDARD 14)
 set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ####################################################################
 # Set Compiler flags

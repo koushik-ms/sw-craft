@@ -1,4 +1,4 @@
-# A shell-wrapper to trigger build and execute whenever any file in this tree changes. 
+# A shell-wrapper to trigger build and execute whenever any file in this tree changes.
 # Use during development for rapid feedback.
 
 CMAKE_SUBDIR=int # Change to `acc` or `int` to run diff tests

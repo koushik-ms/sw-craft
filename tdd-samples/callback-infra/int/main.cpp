@@ -2,8 +2,7 @@
 
 #include "solution.h"
 
-int main()
-{
-    std::cout << "Hello world \n";
-    return 0;
-}
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
+
+TEST_CASE("Can assert") { CHECK(true); }
