@@ -37,7 +37,7 @@ To run the project, just open a terminal (on Linux/Mac) and run the following co
 ```
 cd /path/to/this/project
 mkdir build && cd build
-cmake ..
+cmake ../acc
 ```
 
 To run the tests just run:
@@ -51,6 +51,7 @@ To run the tests with the test outputs displayed on the console, just run:
 ```
 make && make CTEST_OUTPUT_ON_FAILURE=1 test
 ```
+Each top-level directory is its own project including the necessary source and include files and adding the relevant test targets. Idea is that these CMake configs provide a test target that can be invoked to run the tests at that level.
 
 The included watch.sh script provides a way to continuously monitor the directory for any changes and automatically re-build and run tests when any files in the directory tree is modified on disk.
 
@@ -68,3 +69,16 @@ src - contains the solution (production code)
 watch.sh - contains a wrapper script that can be used for rapid test execution feedback during development.
             It watches the source-tree and runs the test targets whenever any file is saved (even README.md).
 
+# Tips for Test-driven development in this repo
+
+The watch.sh can be run to continuously monitor the project tree for changes and re-run tests when it detects any change.
+
+The CMAKE_SUBDIR option controls which tests are built and run. This is useful, e.g., when focussing on a Unit-level TDD for a specific class for a while (several cycles of red-green-refactor) and then switch to an acceptance test that uses this class and make it pass.
+
+Focussing on a smaller level (at exclusion of higher-level tests that continue to fail) is necessary to reach the green phase at Unit-level or Integration-level even when the acceptance tests fail - which will be the case until the feature is completely developed!
+
+So, set the CMAKE_SUBDIR to an appropriate value and run watch.sh.
+
+    Note: Although watch.sh can detect changes to itself it doesn't re-configure CMake when it detects a change (this is to make the feedback loop faster). Same is the case with changes to any CMakeLists.txt files.
+
+So, whenever you make a change to any CMakeLists.txt file or the watch.sh script, terminate the running instance and re-launch it.

@@ -76,5 +76,5 @@ TEST_CASE("CInShd disallow registration when period is not multiple of tick") {}
  * 
  * [X] Add test-case descriptions for all acceptance test-cases.  
  * [X] Refactor the test files and production code into separate files
- * 2. Separate acceptance test and provide build support for proposed top-level design
+ * [X] Separate acceptance test and provide build support for proposed top-level design
  */

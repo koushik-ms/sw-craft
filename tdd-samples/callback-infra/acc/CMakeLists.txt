@@ -19,7 +19,7 @@ ELSEIF (MSVC)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 ENDIF()
 
-include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories("${CMAKE_SOURCE_DIR}/../include")
 
 ####################################################
 # Include relevant subdirectories
@@ -37,7 +37,7 @@ list(APPEND ACC_TESTS
 # Create executable for each test
 ####################################################
 foreach(TEST ${ACC_TESTS})
-    add_executable(acc_${TEST} "${CMAKE_SOURCE_DIR}/acc/${TEST}.cpp")
+    add_executable(acc_${TEST} "${CMAKE_SOURCE_DIR}/${TEST}.cpp")
     # At some point this will depend on and link with a library that has the solution (production code)
     add_test(acc_${TEST} acc_${TEST})
 endforeach()
