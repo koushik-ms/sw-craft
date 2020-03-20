@@ -13,7 +13,10 @@ TEST_CASE("CInShd allow registration of timed callbacks") {
     auto period = 500ms;
     auto tick = 50ms;
     Instant registeredAt, calledAt;
-    CallbackInfrastructure cIn{};
+    auto cIn = CallbackInfrastructureBuilder()
+        .anInstance()
+        .WithDefaultTick()
+        .Build();
 
     cIn.registerCallback(period, [&calledAt]() { calledAt = Now(); });
     registeredAt = Now();
@@ -32,7 +35,10 @@ TEST_CASE("CInShd allow registration and deregistration. Call repeatedly until d
     Instant registeredAt;
     std::vector<Instant> snapshots{};
     snapshots.reserve(multiple);
-    CallbackInfrastructure cIn{};
+    auto cIn = CallbackInfrastructureBuilder()
+        .anInstance()
+        .WithDefaultTick()
+        .Build();
 
     auto callbackId = cIn.registerCallback(period, [&snapshots]() { 
         snapshots.push_back(Now()); 
