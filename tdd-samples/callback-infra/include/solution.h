@@ -24,13 +24,26 @@ public:
 class Worker
 {
 public:
+    bool operator==(Worker const &other) const { return true; }
     template <typename B>
     void schedule(Duration a, B b) {}
+    void cancel() {}
 };
 
 class Infomap
 {
 public:
-    template <typename B>
-    int add(Duration a, B b) { return 0; }
+    int add(Worker const &w)
+    {
+        w_ = w;
+        return 0;
+    }
+    Worker remove(int id) { return w_; };
+
+private:
+    Worker w_;
+};
+
+class CallbackInfrastructureImpl : public CallbackInfrastructure
+{
 };
