@@ -10,6 +10,29 @@ Build a mechanism for setting-up timed callbacks.
 2. The system shall invoke the callbacks at the registered time-intervals (between registration and de-registration)
 3. The system shall have a configurable clock-tick that will influence callback period granularity (shall be in multiple of clock-ticks) and polling performance of the system (a system with a larger clock-tick shall use not more CPU/ OS system calls than a system with a smaller clock tick).
 
+
+
+### High-level (Upfront) design
+
+Analysing the problem statement/ requirements above, we need a `CallbackInfrastructure` class that client use to register and receive callbacks from. 
+
+Separating the callback invocations onto a separate thread would benefit performance of the system and reduce coupling. So having a `Worker` class that helps with the scheduling of callbacks will help.
+
+```mermaid
+classDiagram
+      CallbackInfrastructure "1" *-- "0..n" Worker
+      class CallbackInfrastructure {
+          +registerCallback(Period, CallbackFunction): Id
+          +deregisterCallback(Id): bool
+      }
+      class Worker{
+          +schedule()
+          +cancel()
+      }
+
+```
+
+
 ### Things to do
 
 These are things to do for later. Feel free to start working on any of these after submitting it as an issue & assigning it to yourself.
