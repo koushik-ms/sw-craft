@@ -1,4 +1,5 @@
 #include <chrono>
+#include <functional>
 
 using Instant = std::chrono::time_point<std::chrono::system_clock>;
 using Duration = std::chrono::system_clock::duration;
@@ -46,4 +47,11 @@ private:
 
 class CallbackInfrastructureImpl : public CallbackInfrastructure
 {
+public:
+    CallbackInfrastructureImpl() = default;
+    using FactoryMethodType = std::function<Worker(void)>;
+    CallbackInfrastructureImpl(FactoryMethodType factory) : factory_{factory} {}
+
+private:
+    FactoryMethodType factory_;
 };

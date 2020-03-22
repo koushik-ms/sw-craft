@@ -32,6 +32,7 @@ classDiagram
 
 ```
 [![Design Diagram](https://mermaid.ink/img/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG4gICAgICBDYWxsYmFja0luZnJhc3RydWN0dXJlIFwiMVwiICotLSBcIjAuLm5cIiBXb3JrZXJcbiAgICAgIGNsYXNzIENhbGxiYWNrSW5mcmFzdHJ1Y3R1cmUge1xuICAgICAgICAgICtyZWdpc3RlckNhbGxiYWNrKFBlcmlvZCwgQ2FsbGJhY2tGdW5jdGlvbik6IElkXG4gICAgICAgICAgK2RlcmVnaXN0ZXJDYWxsYmFjayhJZCk6IGJvb2xcbiAgICAgIH1cbiAgICAgIGNsYXNzIFdvcmtlcntcbiAgICAgICAgICArc2NoZWR1bGUoKVxuICAgICAgICAgICtjYW5jZWwoKVxuICAgICAgfVxuIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)](https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoiY2xhc3NEaWFncmFtXG4gICAgICBDYWxsYmFja0luZnJhc3RydWN0dXJlIFwiMVwiICotLSBcIjAuLm5cIiBXb3JrZXJcbiAgICAgIGNsYXNzIENhbGxiYWNrSW5mcmFzdHJ1Y3R1cmUge1xuICAgICAgICAgICtyZWdpc3RlckNhbGxiYWNrKFBlcmlvZCwgQ2FsbGJhY2tGdW5jdGlvbik6IElkXG4gICAgICAgICAgK2RlcmVnaXN0ZXJDYWxsYmFjayhJZCk6IGJvb2xcbiAgICAgIH1cbiAgICAgIGNsYXNzIFdvcmtlcntcbiAgICAgICAgICArc2NoZWR1bGUoKVxuICAgICAgICAgICtjYW5jZWwoKVxuICAgICAgfVxuIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)
+
 Created with [Mermaid](https://mermaid-js.github.io/mermaid-live-editor/)
 
 ### Things to do
@@ -39,7 +40,7 @@ Created with [Mermaid](https://mermaid-js.github.io/mermaid-live-editor/)
 These are things to do for later. Feel free to start working on any of these after submitting it as an issue & assigning it to yourself.
 
 * Add Bazel workspace + build with fetching for any external dependencies
-* Move doctest out of the code-base (and as an external dependency)
+* Move doctest and other external files out of the code-base (and as an external dependency)
 
 ## Repo layout
 Following is the proposed package layout.
@@ -108,6 +109,7 @@ Focussing on a smaller level (at exclusion of higher-level tests that continue t
 
 So, set the CMAKE_SUBDIR to an appropriate value and run watch.sh.
 
-    Note: Although watch.sh can detect changes to itself it doesn't re-configure CMake when it detects a change (this is to make the feedback loop faster). Same is the case with changes to any CMakeLists.txt files.
+>Note: Although watch.sh can detect changes to itself it doesn't re-configure CMake when it detects a change (this is to make the feedback loop faster). Same is the case with changes to any CMakeLists.txt files.
 
 So, whenever you make a change to any CMakeLists.txt file or the watch.sh script, terminate the running instance and re-launch it.
+

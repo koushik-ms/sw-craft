@@ -55,5 +55,13 @@ TEST_SUITE("CallbackInfrastructureImpl Unit tests")
         using namespace std::chrono_literals;
         CallbackInfrastructure *cIn = new CallbackInfrastructureImpl();
         cIn->registerCallback(100ms, []() {});
+        delete cIn;
+    }
+    TEST_CASE("CallbackInfra Should use worker factory to process registrations")
+    {
+        using namespace std::chrono_literals;
+        CallbackInfrastructure *cIn = new CallbackInfrastructureImpl([]() { return Worker(); });
+        cIn->registerCallback(100ms, []() {});
+        delete cIn;
     }
 }
