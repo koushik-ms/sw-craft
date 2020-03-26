@@ -3,13 +3,16 @@
 
 using Instant = std::chrono::time_point<std::chrono::system_clock>;
 using Duration = std::chrono::system_clock::duration;
+using CallbackFunction = std::function<void(void)>;
 
 class CallbackInfrastructure {
 public:
-  template <typename B> int registerCallback(Duration duration, B callback) {
+  virtual int registerCallback(Duration duration, CallbackFunction callback) {
     return 0;
   }
   void deregisterCallback(int id){};
+  virtual ~CallbackInfrastructure(){}; // this means we need move & copy ctors
+                                       // too!
 };
 
 auto Now() { return std::chrono::system_clock::now(); }
@@ -23,9 +26,10 @@ public:
 
 class Worker {
 public:
-  bool operator==(Worker const &other) const { return true; }
-  template <typename B> void schedule(Duration a, B b) {}
-  void cancel() {}
+  virtual bool operator==(Worker const &other) const { return true; }
+  virtual void schedule(Duration a, CallbackFunction b) {}
+  virtual void cancel() {}
+  virtual ~Worker(){};
 };
 
 class Infomap {
@@ -49,3 +53,9 @@ public:
 private:
   FactoryMethodType factory_;
 };
+
+template <typename T> class WorkerImpl : public Worker {
+  //
+};
+
+class StdThreadWorker {};
