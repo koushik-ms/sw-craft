@@ -64,6 +64,24 @@ TEST_SUITE("CallbackInfrastructureImpl Unit tests" * doctest::skip()) {
 TEST_SUITE("Worker Unit tests") {
   TEST_CASE("Can assert") { REQUIRE(true); }
   TEST_CASE("Can create a worker") {
-    [[maybe_unused]] WorkerImpl<StdThreadWorker> w;
+    Worker *w = new WorkerImpl<StdThreadWorker>();
+    delete w;
   }
+  TEST_CASE("Can schedule a callback with local lambda") {
+    // TODO: Need a timeout on this test-case not to exceed 2.5 periods
+    using namespace std::chrono_literals;
+    Worker *w = new WorkerImpl<StdThreadWorker>();
+    auto arbitrary_period{500ms};
+    volatile unsigned called{0};
+    w->schedule(arbitrary_period, [&called]() {
+      std::cout << "Callback!" << std::endl;
+      ++called;
+    });
+    std::this_thread::sleep_for(arbitrary_period * 2);
+    CHECK(called > 0);
+    delete w;
+  }
+  TEST_CASE("Can schedule a callback with free function/ class member func") {}
+  TEST_CASE("Can cancel the currently schedule callback") {}
+  TEST_CASE("Schedule should return immediately (within 1ms)") {}
 }

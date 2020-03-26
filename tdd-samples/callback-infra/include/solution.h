@@ -1,5 +1,7 @@
 #include <chrono>
 #include <functional>
+#include <stdexcept>
+#include <thread>
 
 using Instant = std::chrono::time_point<std::chrono::system_clock>;
 using Duration = std::chrono::system_clock::duration;
@@ -27,7 +29,9 @@ public:
 class Worker {
 public:
   virtual bool operator==(Worker const &other) const { return true; }
-  virtual void schedule(Duration a, CallbackFunction b) {}
+  virtual void schedule(Duration period, CallbackFunction callback) {
+    throw std::runtime_error("Not Implemented!");
+  }
   virtual void cancel() {}
   virtual ~Worker(){};
 };
@@ -54,8 +58,23 @@ private:
   FactoryMethodType factory_;
 };
 
-template <typename T> class WorkerImpl : public Worker {
-  //
+class StdThreadWorker {
+public:
+  void schedule(Duration period, CallbackFunction callback) {
+    std::thread callback_thread([period, &callback]() {
+      std::this_thread::sleep_for(period);
+      callback();
+    });
+  }
 };
 
-class StdThreadWorker {};
+template <typename T = StdThreadWorker> class WorkerImpl : public Worker {
+public:
+  WorkerImpl(T const &impl = T()) : impl_(std::move(impl)) {}
+  virtual void schedule(Duration period, CallbackFunction callback) override {
+    impl_.schedule(period, callback);
+  };
+
+private:
+  T impl_;
+};
