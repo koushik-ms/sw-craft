@@ -61,7 +61,7 @@ private:
 class StdThreadWorker {
 public:
   void schedule(Duration period, CallbackFunction callback) {
-    std::thread callback_thread([period, &callback]() {
+    std::thread callback_thread([period, callback]() {
       std::this_thread::sleep_for(period);
       callback();
     });

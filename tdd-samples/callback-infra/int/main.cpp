@@ -72,11 +72,12 @@ TEST_SUITE("Worker Unit tests") {
     using namespace std::chrono_literals;
     Worker *w = new WorkerImpl<StdThreadWorker>();
     auto arbitrary_period{500ms};
-    volatile unsigned called{0};
-    w->schedule(arbitrary_period, [&called]() {
-      std::cout << "Callback!" << std::endl;
+    unsigned called{0};
+    auto fn = [&called]() {
+      // std::cout << "Callback!" << std::endl;
       ++called;
-    });
+    };
+    w->schedule(arbitrary_period, fn);
     std::this_thread::sleep_for(arbitrary_period * 2);
     CHECK(called > 0);
     delete w;
