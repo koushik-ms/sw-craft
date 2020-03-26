@@ -61,16 +61,19 @@ private:
 class StdThreadWorker {
 public:
   void schedule(Duration period, CallbackFunction callback) {
-    std::thread callback_thread([period, callback]() {
+    callback_thread = new std::thread([period, callback]() {
       std::this_thread::sleep_for(period);
       callback();
     });
   }
+
+private:
+  std::thread *callback_thread; // TODO: replace with uniq ptr
 };
 
 template <typename T = StdThreadWorker> class WorkerImpl : public Worker {
 public:
-  WorkerImpl(T const &impl = T()) : impl_(std::move(impl)) {}
+  WorkerImpl(T &&impl = T()) : impl_(std::forward<T>(impl)) {}
   virtual void schedule(Duration period, CallbackFunction callback) override {
     impl_.schedule(period, callback);
   };

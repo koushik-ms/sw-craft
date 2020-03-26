@@ -42,3 +42,5 @@ foreach(TEST ${ACC_TESTS})
     # At some point this will depend on and link with a library that has the solution (production code)
     add_test(acc_${TEST} acc_${TEST})
 endforeach()
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)

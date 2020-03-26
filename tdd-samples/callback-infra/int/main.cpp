@@ -62,19 +62,20 @@ TEST_SUITE("CallbackInfrastructureImpl Unit tests" * doctest::skip()) {
 }
 
 TEST_SUITE("Worker Unit tests") {
-  TEST_CASE("Can assert") { REQUIRE(true); }
   TEST_CASE("Can create a worker") {
-    Worker *w = new WorkerImpl<StdThreadWorker>();
+    Worker *w = new WorkerImpl<>(StdThreadWorker());
+    REQUIRE(w != nullptr);
     delete w;
   }
   TEST_CASE("Can schedule a callback with local lambda") {
     // TODO: Need a timeout on this test-case not to exceed 2.5 periods
     using namespace std::chrono_literals;
-    Worker *w = new WorkerImpl<StdThreadWorker>();
+    Worker *w = new WorkerImpl<>();
+    REQUIRE(w != nullptr);
     auto arbitrary_period{500ms};
     unsigned called{0};
     auto fn = [&called]() {
-      // std::cout << "Callback!" << std::endl;
+      std::cout << "Callback!" << std::endl;
       ++called;
     };
     w->schedule(arbitrary_period, fn);

@@ -49,3 +49,5 @@ foreach(TEST ${INT_TESTS})
     # At some point this will depend on and link with a library that has the solution (production code)
     add_test(int_${TEST} int_${TEST})
 endforeach()
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
