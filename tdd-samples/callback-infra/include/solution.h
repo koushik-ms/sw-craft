@@ -32,7 +32,7 @@ public:
   virtual void schedule(Duration period, CallbackFunction callback) {
     throw std::runtime_error("Not Implemented!");
   }
-  virtual void cancel() {}
+  virtual void cancel() { throw std::runtime_error("Not Implemented!"); }
   virtual ~Worker(){};
 };
 
@@ -66,6 +66,9 @@ public:
       callback();
     });
   }
+  void cancel() {
+    //
+  }
 
 private:
   std::thread *callback_thread; // TODO: replace with smart ptr
@@ -74,9 +77,10 @@ private:
 template <typename T = StdThreadWorker> class WorkerImpl : public Worker {
 public:
   WorkerImpl(T &&impl = T()) : impl_(std::forward<T>(impl)) {}
-  virtual void schedule(Duration period, CallbackFunction callback) override {
+  void schedule(Duration period, CallbackFunction callback) override {
     impl_.schedule(period, callback);
   };
+  void cancel() override { impl_.cancel(); };
 
 private:
   T impl_;
