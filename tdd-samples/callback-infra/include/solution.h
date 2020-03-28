@@ -68,7 +68,7 @@ public:
   }
 
 private:
-  std::thread *callback_thread; // TODO: replace with uniq ptr
+  std::thread *callback_thread; // TODO: replace with smart ptr
 };
 
 template <typename T = StdThreadWorker> class WorkerImpl : public Worker {

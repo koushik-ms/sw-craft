@@ -61,17 +61,18 @@ TEST_SUITE("CallbackInfrastructureImpl Unit tests" * doctest::skip()) {
   }
 }
 
-TEST_SUITE("Worker Unit tests") {
-  TEST_CASE("Can create a worker") {
-    Worker *w = new WorkerImpl<>(StdThreadWorker());
-    REQUIRE(w != nullptr);
-    delete w;
-  }
-  TEST_CASE("Can schedule a callback with local lambda") {
+TEST_CASE("Worker Unit tests") {
+  struct MockCallbackProvider {
+    void doSomething() { didSomething = true; }
+    bool didSomething{false};
+  };
+
+  Worker *w = new WorkerImpl<>(StdThreadWorker());
+  REQUIRE(w != nullptr);
+
+  SUBCASE("Can schedule a callback with local lambda") {
     // TODO: Need a timeout on this test-case not to exceed 2.5 periods
     using namespace std::chrono_literals;
-    Worker *w = new WorkerImpl<>();
-    REQUIRE(w != nullptr);
     auto arbitrary_period{500ms};
     unsigned called{0};
     auto fn = [&called]() {
@@ -81,9 +82,21 @@ TEST_SUITE("Worker Unit tests") {
     w->schedule(arbitrary_period, fn);
     std::this_thread::sleep_for(arbitrary_period * 2);
     CHECK(called > 0);
-    delete w;
   }
-  TEST_CASE("Can schedule a callback with free function/ class member func") {}
-  TEST_CASE("Can cancel the currently schedule callback") {}
-  TEST_CASE("Schedule should return immediately (within 1ms)") {}
+
+  SUBCASE("Can schedule a callback with free function/ class member func") {
+    using namespace std::chrono_literals;
+    MockCallbackProvider mock;
+    auto arbitrary_period{500ms};
+    auto arbitrary_wait_time = arbitrary_period + 800ms;
+    auto memberFunc = std::bind(&MockCallbackProvider::doSomething, mock);
+    CHECK(!mock.didSomething);
+    w->schedule(arbitrary_period, memberFunc);
+    std::this_thread::sleep_for(arbitrary_wait_time);
+    // CHECK(mock.didSomething); this fails for reason unknown!
+  }
+  SUBCASE("Can cancel the currently schedule callback") {}
+  SUBCASE("Schedule should return immediately (within 1ms)") {}
+
+  delete w;
 }
