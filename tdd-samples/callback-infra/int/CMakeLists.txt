@@ -1,4 +1,5 @@
 project(callback-infra-int)
+# project(callback-infra-int C CXX)
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -10,6 +11,11 @@ enable_testing()
 set(CXX_STANDARD 14)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+####################################################################
+# External libraries
+####################################################################
+find_package(Threads REQUIRED)
 
 ####################################################################
 # Set Compiler flags
@@ -39,6 +45,9 @@ list(APPEND INT_TESTS
 ####################################################
 foreach(TEST ${INT_TESTS})
     add_executable(int_${TEST} "${CMAKE_SOURCE_DIR}/${TEST}.cpp")
+    target_link_libraries(int_${TEST} Threads::Threads)
     # At some point this will depend on and link with a library that has the solution (production code)
     add_test(int_${TEST} int_${TEST})
 endforeach()
+
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)
