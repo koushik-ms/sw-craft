@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdlib>
 #include <functional>
 #include <stdexcept>
 #include <thread>
@@ -9,8 +10,10 @@ using CallbackFunction = std::function<void(void)>;
 
 class CallbackInfrastructure {
 public:
-  virtual int registerCallback(Duration duration, CallbackFunction callback) {
-    return 0;
+  using IdType = std::size_t;
+  virtual IdType registerCallback(Duration duration,
+                                  CallbackFunction callback) {
+    throw std::runtime_error("Not Implemented!");
   }
   void deregisterCallback(int id){};
   virtual ~CallbackInfrastructure(){}; // this means we need move & copy ctors
@@ -36,26 +39,29 @@ public:
   virtual ~Worker(){};
 };
 
-class Infomap {
-public:
-  int add(Worker const &w) {
-    w_ = w;
-    return 0;
-  }
-  Worker remove(int id) { return w_; };
-
-private:
-  Worker w_;
-};
-
 class CallbackInfrastructureImpl : public CallbackInfrastructure {
 public:
   CallbackInfrastructureImpl() = default;
-  using FactoryMethodType = std::function<Worker(void)>;
+  using FactoryMethodType = std::function<Worker *()>;
   CallbackInfrastructureImpl(FactoryMethodType factory) : factory_{factory} {}
+  IdType registerCallback(Duration duration,
+                          CallbackFunction callback) override {
+    worker_ = factory_();
+    return 0;
+  };
 
 private:
+  Worker *worker_;
   FactoryMethodType factory_;
+};
+
+class Infomap {
+public:
+  int add(Worker const &w) { throw std::runtime_error("Not Implemented"); }
+  Worker remove(int id) { throw std::runtime_error("Not Implemented"); };
+
+private:
+  Worker w_;
 };
 
 class StdThreadWorker {

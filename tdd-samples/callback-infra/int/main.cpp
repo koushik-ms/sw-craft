@@ -7,9 +7,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-// ON/OFF test suites
+// ON/OFF test suites (TODO: Make these static)
 bool TEST_WORKER = true;
-bool TEST_CALLBACKINFRA = false;
+bool TEST_CALLBACKINFRA = true;
 bool TEST_INTEGRATION = false;
 
 TEST_SUITE_BEGIN("CallbackInfra integration scenario" *
@@ -53,18 +53,46 @@ TEST_SUITE_END(); // "CallbackInfra integration scenario"
 
 TEST_SUITE_BEGIN("CallbackInfrastructureImpl Unit tests" *
                  doctest::skip(!TEST_CALLBACKINFRA));
-TEST_CASE("Can call register") {
+
+class CallbackInfraShould {
+public:
+  struct MockWorkerImpl {
+    MockWorkerImpl() { ++instanceCount; }
+    void schedule(Duration d, CallbackFunction callback) {
+      schedule_called_ = true;
+      ++schedule_count_;
+    };
+    void cancel() {
+      cancel_called_ = true;
+      ++cancel_count_;
+    };
+    bool schedule_called_{false}, cancel_called_{false};
+    unsigned schedule_count_{};
+    unsigned cancel_count_{};
+    static unsigned instanceCount;
+  };
+  CallbackInfraShould() {
+    auto worker_factory_method = []() {
+      return new WorkerImpl<MockWorkerImpl>();
+    };
+    sut_ = new CallbackInfrastructureImpl(worker_factory_method);
+  };
+  ~CallbackInfraShould() { delete sut_; }
+
+protected:
+  CallbackInfrastructure *sut_;
+};
+unsigned CallbackInfraShould::MockWorkerImpl::instanceCount{0};
+
+TEST_CASE_FIXTURE(CallbackInfraShould, "allow register callback") {
   using namespace std::chrono_literals;
-  CallbackInfrastructure *cIn = new CallbackInfrastructureImpl();
-  cIn->registerCallback(100ms, []() {});
-  delete cIn;
+  sut_->registerCallback(100ms, []() {});
 }
-TEST_CASE("CallbackInfra Should use worker factory to process registrations") {
+TEST_CASE_FIXTURE(CallbackInfraShould,
+                  "use worker factory to process registrations") {
   using namespace std::chrono_literals;
-  CallbackInfrastructure *cIn =
-      new CallbackInfrastructureImpl([]() { return Worker(); });
-  cIn->registerCallback(100ms, []() {});
-  delete cIn;
+  sut_->registerCallback(100ms, []() {});
+  CHECK(CallbackInfraShould::MockWorkerImpl::instanceCount > 0);
 }
 TEST_SUITE_END(); // CallbackInfrastructureImpl Unit tests
 
