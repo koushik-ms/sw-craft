@@ -10,9 +10,9 @@
 #include "doctest.h"
 
 // ON/OFF test suites (TODO: Make these static)
-bool TEST_WORKER = true;
-bool TEST_CALLBACKINFRA = true;
-bool TEST_INTEGRATION = false;
+constexpr bool TEST_WORKER{true};
+constexpr bool TEST_CALLBACKINFRA{true};
+constexpr bool TEST_INTEGRATION{false};
 
 TEST_SUITE_BEGIN("CallbackInfra integration scenario" *
                  doctest::skip(!TEST_INTEGRATION));
@@ -114,7 +114,7 @@ class WorkerShould {
  protected:
   WorkerShould() {
     using namespace std::chrono_literals;
-    w = new WorkerImpl<>();
+    w = new WorkerImpl();
     REQUIRE(w != nullptr);
     arbitrary_period = 100ms;
     arbitrary_wait_time = arbitrary_period + 100ms;
@@ -166,5 +166,6 @@ TEST_CASE_FIXTURE(WorkerShould, "invoke Callback repeatedly until cancelled") {
 }
 TEST_CASE_FIXTURE(WorkerShould,
                   "return from Schedule() immediately (within 1ms)") {}
+TEST_CASE_FIXTURE(WorkerShould, "not invoke callback after cancel returns") {}
 
 TEST_SUITE_END();  // "Worker Unit Tests"

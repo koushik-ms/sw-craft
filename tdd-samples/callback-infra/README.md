@@ -74,7 +74,7 @@ To run the project, just open a terminal (on Linux/Mac) and run the following co
 ```bash
 cd /path/to/this/project
 mkdir build && cd build
-cmake ../acc
+cmake ..
 ```
 
 To run the tests just run:

@@ -28,9 +28,6 @@ class Infomap {
 public:
   int add(Worker const &w) { throw std::runtime_error("Not Implemented"); }
   Worker remove(int id) { throw std::runtime_error("Not Implemented"); };
-
-private:
-  Worker w_;
 };
 
 class StdThreadWorker {
