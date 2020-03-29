@@ -1,3 +1,6 @@
+#include <future>
+#include <iostream>
+
 class Worker {
 public:
   virtual bool operator==(Worker const &other) const { return true; }
@@ -30,25 +33,44 @@ public:
   Worker remove(int id) { throw std::runtime_error("Not Implemented"); };
 };
 
-class StdThreadWorker {
-public:
-  void schedule(Duration period, CallbackFunction callback) {
-    callback_thread = new std::thread([period, callback]() {
-      std::this_thread::sleep_for(period);
-      callback();
-    });
-  }
-  void cancel() {
-    //
-  }
+class AsyncWorker
+{
+  public:
+    void schedule(Duration period, CallbackFunction callback) {
+        worker_fut = std::async([=](){
+          while(!stop)
+          {
+            std::this_thread::sleep_for(period);
+            if(!stop)
+            {
+              callback();
+            }
+          }
+        });
+    }
+    void cancel() {
+      if(worker_fut.valid())
+      {
+        std::cout << " cancel" << std::endl;
+        stop = true;
+        worker_fut.get();
+      }
+    }
 
-private:
-  std::thread *callback_thread; // TODO: replace with smart ptr
+    ~AsyncWorker()
+    {
+      cancel();
+    }
+
+  private:
+    std::future<void> worker_fut;
+    bool stop {false};
 };
 
-template <typename T = StdThreadWorker> class WorkerImpl : public Worker {
+template <typename T = AsyncWorker> class WorkerImpl : public Worker {
 public:
-  WorkerImpl(T &&impl = T()) : impl_(std::forward<T>(impl)) {}
+  WorkerImpl() = default;
+  WorkerImpl(T &&impl) : impl_(std::forward<T>(impl)) {}
   void schedule(Duration period, CallbackFunction callback) override {
     impl_.schedule(period, callback);
   };
