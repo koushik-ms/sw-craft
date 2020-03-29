@@ -51,13 +51,13 @@ TEST_CASE("How to keep track of registrations") {
   Worker retrieved = m.remove(id);
   CHECK(retrieved == original);
 }
-TEST_SUITE_END(); // "CallbackInfra integration scenario"
+TEST_SUITE_END();  // "CallbackInfra integration scenario"
 
 TEST_SUITE_BEGIN("CallbackInfrastructureImpl Unit tests" *
                  doctest::skip(!TEST_CALLBACKINFRA));
 
 class CallbackInfraShould {
-public:
+ public:
   struct MockWorkerImpl {
     MockWorkerImpl() { ++instanceCount; }
     void schedule(Duration d, CallbackFunction callback) {
@@ -81,7 +81,7 @@ public:
   };
   ~CallbackInfraShould() { delete sut_; }
 
-protected:
+ protected:
   CallbackInfrastructure *sut_;
 };
 unsigned CallbackInfraShould::MockWorkerImpl::instanceCount{0};
@@ -96,7 +96,7 @@ TEST_CASE_FIXTURE(CallbackInfraShould,
   sut_->registerCallback(100ms, []() {});
   CHECK(CallbackInfraShould::MockWorkerImpl::instanceCount > 0);
 }
-TEST_SUITE_END(); // CallbackInfrastructureImpl Unit tests
+TEST_SUITE_END();  // CallbackInfrastructureImpl Unit tests
 
 TEST_SUITE_BEGIN("Worker Unit tests" * doctest::skip(!TEST_WORKER));
 
@@ -111,8 +111,7 @@ struct MockCallbackProvider {
 };
 
 class WorkerShould {
-
-protected:
+ protected:
   WorkerShould() {
     using namespace std::chrono_literals;
     w = new WorkerImpl<>();
@@ -168,4 +167,4 @@ TEST_CASE_FIXTURE(WorkerShould, "invoke Callback repeatedly until cancelled") {
 TEST_CASE_FIXTURE(WorkerShould,
                   "return from Schedule() immediately (within 1ms)") {}
 
-TEST_SUITE_END(); // "Worker Unit Tests"
+TEST_SUITE_END();  // "Worker Unit Tests"
