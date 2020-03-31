@@ -9,12 +9,13 @@
 #include "doctest.h"
 
 // For mocking, this has to be after the doctest.h include
-#include <doctest/trompeloeil.hpp>
+#include "doctest/trompeloeil.hpp"
 
 // ON/OFF test suites (TODO: Make these static)
 constexpr bool TEST_WORKER{true};
 constexpr bool TEST_CALLBACKINFRA{true};
 constexpr bool TEST_INTEGRATION{false};
+constexpr bool TEST_LEARNING{true};
 
 TEST_SUITE_BEGIN("CallbackInfra integration scenario" *
                  doctest::skip(!TEST_INTEGRATION));
@@ -109,7 +110,32 @@ TEST_CASE_FIXTURE(CallbackInfraShould,
   sut_->registerCallback(100ms, []() {});
   CHECK(CallbackInfraShould::MockWorkerImpl::instanceCount > 0);
 }
-TEST_CASE("CallbackInfra: register delegates correctly to worker schedule") {}
+
+struct MockWorker : public Worker {
+  MAKE_MOCK2(schedule, void(Duration, CallbackFunction), override);
+  MAKE_MOCK0(cancel, void(void), override);
+};
+
+TEST_CASE("CallbackInfra: register delegates correctly to worker schedule") {
+  using namespace std::chrono_literals;
+  using trompeloeil::_;
+  unsigned worker_instance_count{0};
+  MockWorker mock;
+  Duration a_period{350ms};
+  CallbackFunction a_cb = []() {};
+  std::unique_ptr<CallbackInfrastructure> sut =
+      std::make_unique<CallbackInfrastructureImpl>(
+          [&worker_instance_count, &mock]() {
+            ++worker_instance_count;
+            return &mock;
+          });
+  {
+    REQUIRE_CALL(mock, schedule(_, _)).TIMES(2);
+    sut->registerCallback(a_period, a_cb);
+    sut->registerCallback(a_period * 2, a_cb);
+  }
+  REQUIRE(worker_instance_count == 2);
+}
 TEST_CASE("register returns diff id for diff period same callback") {}
 TEST_CASE("register returns diff id for same period diff callback") {}
 TEST_CASE("allow de-register of callback") {}
@@ -225,7 +251,7 @@ TEST_SUITE_END();  // "Worker Unit Tests"
 #include <type_traits>
 #include <typeinfo>
 
-TEST_SUITE_BEGIN("Learning tests");
+TEST_SUITE_BEGIN("Learning tests" * doctest::skip(!TEST_LEARNING));
 TEST_CASE("Making an idtype for identifying registrations") {
   SUBCASE("Can make hash of a string") {
     std::string arbitrary_string{"Some text"};
@@ -245,7 +271,7 @@ TEST_CASE("Making an idtype for identifying registrations") {
 
     CHECK(first_hash != second_hash);
   }
-  SUBCASE("hash of string is size_t") {
+  SUBCASE("hash of string is of type size_t") {
     auto hasher = std::hash<std::string>{};
     auto the_hash = hasher("Some string");
     std::cout << "The hash of \"Some string\" is :" << the_hash << std::endl;
@@ -268,7 +294,7 @@ TEST_CASE("Making an idtype for identifying registrations") {
     auto f2 = []() {};
     auto f3 = []() { std::cout << "a very important action\n"; };
     auto hasher = std::hash<std::string>{};
-    auto make_hash = [&hasher](auto a, auto b) -> std::size_t {
+    auto make_hash = [&hasher](auto const& a, auto const& b) -> std::size_t {
       return hasher(std::to_string(a.count()) + typeid(b).name());
     };
 

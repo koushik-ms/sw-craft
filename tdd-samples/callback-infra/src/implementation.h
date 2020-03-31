@@ -26,6 +26,7 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
   IdType registerCallback(Duration duration,
                           CallbackFunction callback) override {
     worker_ = factory_();
+    worker_->schedule(duration, callback);
     return 0;
   };
 
