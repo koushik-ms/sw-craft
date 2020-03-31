@@ -8,10 +8,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-static constexpr bool SKIP{true};
+static constexpr bool SKIP{false};
 
-TEST_CASE("CInShd allow registration of timed callbacks" *
-          doctest::skip(SKIP)) {
+TEST_CASE("CInShd allow registration of timed callbacks" * doctest::skip(SKIP) *
+          doctest::may_fail()) {
   using namespace std::chrono_literals;
   auto period = 500ms;
   auto tick = 50ms;
@@ -28,9 +28,10 @@ TEST_CASE("CInShd allow registration of timed callbacks" *
   CHECK(latency >= (period - tick));
 }
 
-TEST_CASE("CInShd allow registration and deregistration. Call repeatedly until "
-          "deregistration" *
-          doctest::skip(SKIP)) {
+TEST_CASE(
+    "CInShd allow registration and deregistration. Call repeatedly until "
+    "deregistration" *
+    doctest::skip(SKIP) * doctest::may_fail()) {
   using namespace std::chrono_literals;
   auto period = 500ms;
   auto tick = 50ms;
@@ -63,17 +64,12 @@ TEST_CASE("CInShd allow registration and deregistration. Call repeatedly until "
   CHECK(maxLatency <= (period + tick));
 }
 
-TEST_CASE("CInShd start calling after registration") {}
-TEST_CASE("CInShd stop calling after de-registration") {}
+TEST_CASE("CInShd start calling after registration" * doctest::skip(SKIP) *
+          doctest::may_fail()) {}
+TEST_CASE("CInShd stop calling after de-registration" * doctest::skip(SKIP) *
+          doctest::may_fail()) {}
 TEST_CASE(
-    "CInShd shall call within period +/- clock-tick for various clock-ticks") {}
-TEST_CASE("CInShd disallow registration when period is not multiple of tick") {}
-
-/*
- * Things to do:
- *
- * [X] Add test-case descriptions for all acceptance test-cases.
- * [X] Refactor the test files and production code into separate files
- * [X] Separate acceptance test and provide build support for proposed top-level
- * design
- */
+    "CInShd shall call within period +/- clock-tick for various clock-ticks" *
+    doctest::skip(SKIP) * doctest::may_fail()) {}
+TEST_CASE("CInShd disallow registration when period is not multiple of tick" *
+          doctest::skip(SKIP) * doctest::may_fail()) {}

@@ -1,5 +1,6 @@
 #include <future>
 #include <iostream>
+#include <random>
 #include <typeinfo>
 
 #include "solution.h"
@@ -27,12 +28,16 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
                           CallbackFunction callback) override {
     worker_ = factory_();
     worker_->schedule(duration, callback);
-    return 0;
+    IdType id = MakeRandomId();
+    return id;
   };
 
  private:
-  Worker *worker_;
-  FactoryMethodType factory_;
+  IdType MakeRandomId() { return distribution(generator); }
+  Worker *worker_{};
+  FactoryMethodType factory_{};
+  std::mt19937 generator{std::random_device{}()};
+  std::uniform_int_distribution<IdType> distribution;
 };
 
 class AsyncWorker {

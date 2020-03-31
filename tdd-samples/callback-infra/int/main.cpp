@@ -14,11 +14,11 @@
 // ON/OFF test suites (TODO: Make these static)
 constexpr bool TEST_WORKER{true};
 constexpr bool TEST_CALLBACKINFRA{true};
-constexpr bool TEST_INTEGRATION{false};
+constexpr bool TEST_INTEGRATION{true};
 constexpr bool TEST_LEARNING{true};
 
 TEST_SUITE_BEGIN("CallbackInfra integration scenario" *
-                 doctest::skip(!TEST_INTEGRATION));
+                 doctest::skip(!TEST_INTEGRATION) * doctest::may_fail());
 
 TEST_CASE("Building an instance of CallbackInfra") {
   SUBCASE("Able to create an instance with default tick") {}
@@ -131,8 +131,9 @@ TEST_CASE("CallbackInfra: register delegates correctly to worker schedule") {
           });
   {
     REQUIRE_CALL(mock, schedule(_, _)).TIMES(2);
-    sut->registerCallback(a_period, a_cb);
-    sut->registerCallback(a_period * 2, a_cb);
+    auto id1 = sut->registerCallback(a_period, a_cb);
+    auto id2 = sut->registerCallback(a_period * 2, a_cb);
+    REQUIRE(id1 != id2);
   }
   REQUIRE(worker_instance_count == 2);
 }
@@ -247,6 +248,7 @@ TEST_SUITE_END();  // "Worker Unit Tests"
 
 #include <chrono>
 #include <functional>
+#include <random>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -318,6 +320,15 @@ TEST_CASE("Making an idtype for identifying registrations") {
     std::set<decltype(d1f1)> duplicate_less(all_hashes.begin(),
                                             all_hashes.end());
     CHECK(all_hashes.size() == duplicate_less.size());
+  }
+  SUBCASE("Can make a random ID") {
+    // Standard mersenne_twister_engine seeded with std::random_device
+    std::mt19937 generator(std::random_device{}());
+    std::uniform_int_distribution<CallbackInfrastructure::IdType> dis;
+    CallbackInfrastructure::IdType x = dis(generator);
+    CallbackInfrastructure::IdType y = dis(generator);
+    std::cout << "First: " << x << " Second: " << y << std::endl;
+    CHECK(x != y);
   }
 }
 TEST_SUITE_END();  // Learning tests
