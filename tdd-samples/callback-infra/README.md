@@ -14,7 +14,7 @@ Build a mechanism for setting-up timed callbacks.
 
 ### High-level (Upfront) design
 
-Analysing the problem statement/ requirements above, we need a `CallbackInfrastructure` class that client use to register and receive callbacks from. 
+Analysing the problem statement/ requirements above, we need a `CallbackInfrastructure` class that client use to register and receive callbacks from.
 
 Separating the callback invocations onto a separate thread would benefit performance of the system and reduce coupling. So having a `Worker` class that helps with the scheduling of callbacks will help.
 
@@ -40,7 +40,7 @@ Created with [Mermaid](https://mermaid-js.github.io/mermaid-live-editor/)
 These are things to do for later. Feel free to start working on any of these after submitting it as an issue & assigning it to yourself.
 
 * Add Bazel workspace + build with fetching for any external dependencies
-* Move doctest and other external files out of the code-base (and as an external dependency)
+* Move doctest and other external files out of the code-base (and as an external dependency). For doctest, steps are explained [here](https://github.com/onqtam/doctest/blob/master/doc/markdown/build-systems.md).
 
 ## Repo layout
 Following is the proposed package layout.
@@ -112,4 +112,3 @@ So, set the CMAKE_SUBDIR to an appropriate value and run watch.sh.
 >Note: Although watch.sh can detect changes to itself it doesn't re-configure CMake when it detects a change (this is to make the feedback loop faster). Same is the case with changes to any CMakeLists.txt files.
 
 So, whenever you make a change to any CMakeLists.txt file or the watch.sh script, terminate the running instance and re-launch it.
-

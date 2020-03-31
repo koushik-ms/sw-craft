@@ -8,6 +8,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
+// For mocking, this has to be after the doctest.h include
+#include <doctest/trompeloeil.hpp>
+
 // ON/OFF test suites (TODO: Make these static)
 constexpr bool TEST_WORKER{true};
 constexpr bool TEST_CALLBACKINFRA{true};

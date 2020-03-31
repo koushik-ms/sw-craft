@@ -15,6 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 ####################################################################
 # External libraries
 ####################################################################
+set(THIRD_PARTY_LIBS ${CMAKE_SOURCE_DIR}/third_party)
 
 ####################################################################
 # Set Compiler flags
