@@ -21,6 +21,8 @@ struct MockWorker : public Worker {
   MAKE_MOCK0(cancel, void(void), override);
 };
 
+auto return_new_worker = []() { return new Worker(); };
+
 TEST_CASE("CallbackInfra: register spec" *
           doctest::description(
               "Should use worker factory to create new worker per "
@@ -59,12 +61,79 @@ TEST_CASE("register returns diff id for diff period same callback") {
     REQUIRE(id1 != id2);
   }
 }
-TEST_CASE("register returns diff id for same period diff callback") {}
-TEST_CASE("allow de-register of callback") {}
-TEST_CASE("disallow de-register of invalid callback") {}
-TEST_CASE(
-    "silently fail when de-registering a callback that is already "
-    "de-registered") {}
+TEST_CASE("register returns diff id for same period diff callback") {
+  using trompeloeil::_;
+  MockWorker mock;
+  Duration a_period{500000000};
+  CallbackFunction a_cb = []() {};
+  CallbackFunction another_cb = []() {
+    std::cout << MakeId(Duration{200}, []() {}) << std::endl;
+  };
+  std::unique_ptr<CallbackInfrastructure> sut =
+      std::make_unique<CallbackInfrastructureImpl>([&mock]() { return &mock; });
+  {
+    ALLOW_CALL(mock, schedule(_, _));
+    auto id1 = sut->registerCallback(a_period, a_cb);
+    auto id2 = sut->registerCallback(a_period, another_cb);
+    REQUIRE(id1 != id2);
+  }
+}
+TEST_CASE("allow de-register of callback. silently fail if invalid") {
+  std::unique_ptr<CallbackInfrastructure> sut =
+      std::make_unique<CallbackInfrastructureImpl>(return_new_worker);
+  sut->deregisterCallback(0);
+}
+TEST_CASE("delegate de-register call to worker") {
+  using trompeloeil::_;
+  MockWorker mock;
+  Duration a_period{500000000};
+  CallbackFunction a_cb = []() {};
+
+  std::unique_ptr<CallbackInfrastructure> sut =
+      std::make_unique<CallbackInfrastructureImpl>([&mock]() { return &mock; });
+  {
+    ALLOW_CALL(mock, schedule(_, _));
+    REQUIRE_CALL(mock, cancel());
+    auto id = sut->registerCallback(a_period, a_cb);
+    std::this_thread::sleep_for(a_period);
+    sut->deregisterCallback(id);
+  }
+}
+TEST_CASE("invoke cancel on the worker corresponding to callback") {
+  using trompeloeil::_;
+  MockWorker mock1, mock2;
+  Duration a_period{500000000};
+  CallbackFunction a_cb = []() {};
+  bool mock_with_mock1 = true;
+  std::unique_ptr<CallbackInfrastructure> sut =
+      std::make_unique<CallbackInfrastructureImpl>(
+          [&mock1, &mock2, &mock_with_mock1]() {
+            std::cout << "Factory: " << std::boolalpha << mock_with_mock1
+                      << ", " << &mock1 << ", " << &mock2 << std::endl;
+            Worker *product;
+            if (mock_with_mock1) {
+              product = &mock1;
+            } else {
+              product = &mock2;
+            }
+            mock_with_mock1 = !mock_with_mock1;
+            return product;
+          });
+  {
+    ALLOW_CALL(mock1, schedule(_, _));
+    ALLOW_CALL(mock2, schedule(_, _));
+    REQUIRE_CALL(mock1, cancel());
+    FORBID_CALL(mock2, cancel());
+    std::cout << "Sut ready\nRegister first callback\n";
+    auto id1 = sut->registerCallback(a_period, a_cb);
+    std::cout << "Register second callback\n";
+    auto id2 = sut->registerCallback(a_period * 2, a_cb);
+    CHECK(id1 != id2);
+    std::cout << "De-Register first callback\n";
+    sut->deregisterCallback(id1);
+  }
+}
 TEST_CASE("CallbackInfra shoud de-register all callbacks when destroyed") {}
+
 TEST_CASE("register shall return within 1ms") {}
 TEST_SUITE_END();  // CallbackInfrastructureImpl Unit tests

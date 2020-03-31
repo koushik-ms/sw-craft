@@ -1,5 +1,6 @@
 #include <future>
 #include <iostream>
+#include <map>
 #include <random>
 #include <typeinfo>
 
@@ -27,10 +28,18 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
   IdType registerCallback(Duration duration,
                           CallbackFunction callback) override {
     worker_ = factory_();
-    worker_->schedule(duration, callback);
     IdType id = MakeRandomId();
+    worker_->schedule(duration, callback);
+    registrations.insert({id, worker_});
     return id;
   };
+
+  void deregisterCallback(IdType id) override {
+    if (registrations.find(id) != registrations.end()) {
+      worker_ = registrations[id];
+      worker_->cancel();
+    }
+  }
 
  private:
   IdType MakeRandomId() { return distribution(generator); }
@@ -38,6 +47,7 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
   FactoryMethodType factory_{};
   std::mt19937 generator{std::random_device{}()};
   std::uniform_int_distribution<IdType> distribution;
+  std::map<IdType, Worker *> registrations;
 };
 
 class AsyncWorker {
