@@ -22,32 +22,42 @@ class Worker {
 
 class CallbackInfrastructureImpl : public CallbackInfrastructure {
  public:
+  using WorkerPtr = std::shared_ptr<Worker>;
+  using FactoryMethodType = std::function<WorkerPtr()>;
+
   CallbackInfrastructureImpl() = default;
-  using FactoryMethodType = std::function<Worker *()>;
   CallbackInfrastructureImpl(FactoryMethodType factory) : factory_{factory} {}
   IdType registerCallback(Duration duration,
                           CallbackFunction callback) override {
-    worker_ = factory_();
+    WorkerPtr worker{factory_()};
     IdType id = MakeRandomId();
-    worker_->schedule(duration, callback);
-    registrations.insert({id, worker_});
+    worker->schedule(duration, callback);
+    registrations.insert({id, worker});
     return id;
   };
 
   void deregisterCallback(IdType id) override {
     if (registrations.find(id) != registrations.end()) {
-      worker_ = registrations[id];
-      worker_->cancel();
+      WorkerPtr worker = registrations.at(id);
+      worker->cancel();
+      registrations.erase(id);
+    }
+  }
+
+  ~CallbackInfrastructureImpl() {
+    std::cout << "At cleanup: " << registrations.size() << std::endl;
+    for (auto &id_worker_pair : registrations) {
+      WorkerPtr active = id_worker_pair.second;
+      active->cancel();
     }
   }
 
  private:
   IdType MakeRandomId() { return distribution(generator); }
-  Worker *worker_{};
   FactoryMethodType factory_{};
   std::mt19937 generator{std::random_device{}()};
   std::uniform_int_distribution<IdType> distribution;
-  std::map<IdType, Worker *> registrations;
+  std::map<IdType, WorkerPtr> registrations;
 };
 
 class AsyncWorker {

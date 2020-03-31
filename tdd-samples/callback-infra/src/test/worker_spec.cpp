@@ -28,8 +28,8 @@ class WorkerShould {
  protected:
   WorkerShould() {
     using namespace std::chrono_literals;
-    arbitrary_period = 500ms;
-    arbitrary_wait_time = arbitrary_period + 100ms;
+    arbitrary_period = 10ms;
+    arbitrary_wait_time = arbitrary_period + 1ms;
   }
   virtual ~WorkerShould() {}
   Duration arbitrary_period;

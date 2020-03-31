@@ -22,8 +22,8 @@ class CallbackInfrastructure {
   virtual void deregisterCallback(IdType id) {
     throw std::runtime_error("Not Implemented!");
   };
-  virtual ~CallbackInfrastructure(){};  // this means we need move & copy ctors
-                                        // too!
+  virtual ~CallbackInfrastructure(){};  // TODO: this means we need move & copy
+                                        // ctors too!
 };
 
 auto Now() { return std::chrono::system_clock::now(); }
