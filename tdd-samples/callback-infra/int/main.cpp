@@ -13,7 +13,7 @@
 constexpr bool TEST_INTEGRATION{true};
 
 TEST_SUITE_BEGIN("CallbackInfra integration scenario" *
-                 doctest::skip(!TEST_INTEGRATION) * doctest::may_fail());
+                 doctest::skip(!TEST_INTEGRATION));
 
 TEST_CASE("Building an instance of CallbackInfra") {
   SUBCASE("Able to create an instance with default tick") {}
@@ -25,33 +25,29 @@ TEST_CASE("What (de)Register is made-up of") {
   // this test works out the internals of the register method
   auto period = 500ms;
   auto callback = []() {};
-  Worker original;
+  std::shared_ptr<Worker> original{new WorkerImpl{}};
 
-  original.schedule(period, callback);
-  original.cancel();
-  // Above leads to a unit-test for CallbackInfrastructure
-  //     Make mock worker
-  //     Create a CallbackInfrastructure-like object `sut` with mock worker as
-  //     dependency Call register on sut, expect call to worker with right
-  //     param values. Call de-register on sut, expect call to cancel.
+  original->schedule(period, callback);
+  original->cancel();
 }
 
 TEST_CASE("How to keep track of registrations") {
   using namespace std::chrono_literals;
+  using WorkerPtr = std::shared_ptr<Worker>;
   auto one_sec = Duration{1s};
   auto half_sec = Duration{500ms};
   auto callback_fn = []() { std::cout << "Wonder!" << std::endl; };
-  std::map<CallbackInfrastructure::IdType, Worker> data_store;
+  std::map<CallbackInfrastructure::IdType, WorkerPtr> data_store;
 
-  Worker original_half;
-  original_half.schedule(half_sec, callback_fn);
+  WorkerPtr original_half{new WorkerImpl{}};
+  original_half->schedule(half_sec, callback_fn);
   CallbackInfrastructure::IdType id = MakeId(half_sec, callback_fn);
   data_store.insert({id, original_half});
   REQUIRE(data_store.find(id) != data_store.end());
   CHECK(data_store.find(id)->second == original_half);
 
-  Worker original_one;
-  original_one.schedule(one_sec, callback_fn);
+  WorkerPtr original_one{new WorkerImpl{}};
+  original_one->schedule(one_sec, callback_fn);
   id = MakeId(one_sec, callback_fn);
   data_store.insert({id, original_one});
 
