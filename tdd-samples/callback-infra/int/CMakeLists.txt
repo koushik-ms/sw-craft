@@ -1,9 +1,6 @@
 # Integration tests use private include files.
 include_directories("${CMAKE_SOURCE_DIR}/src")
 
-# Use trompeloeil for mocking
-find_package(trompeloeil REQUIRED HINTS "${THIRD_PARTY_LIBS}/trompeloeil")
-
 ####################################################
 # Create executable for each test
 ####################################################

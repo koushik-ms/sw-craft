@@ -16,6 +16,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # External libraries
 ####################################################################
 set(THIRD_PARTY_LIBS ${CMAKE_SOURCE_DIR}/third_party)
+# Use trompeloeil for mocking
+find_package(trompeloeil REQUIRED HINTS "${THIRD_PARTY_LIBS}/trompeloeil")
 
 ####################################################################
 # Set Compiler flags
