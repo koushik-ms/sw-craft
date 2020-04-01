@@ -26,13 +26,24 @@ class CallbackInfrastructure {
                                         // ctors too!
 };
 
-auto Now() { return std::chrono::system_clock::now(); }
+using CallbackInfrastructurePtr = std::shared_ptr<CallbackInfrastructure>;
+
+inline auto Now() { return std::chrono::system_clock::now(); }
 
 class CallbackInfrastructureBuilder {
  public:
-  CallbackInfrastructureBuilder &anInstance() { return *this; }
-  CallbackInfrastructureBuilder &WithDefaultTick() { return *this; }
-  CallbackInfrastructure Build() { return CallbackInfrastructure{}; }
+  virtual CallbackInfrastructureBuilder *anInstance() { return this; }
+  virtual CallbackInfrastructureBuilder *WithDefaultTick() { return this; }
+  virtual CallbackInfrastructure BuildPrototype() {
+    return CallbackInfrastructure{};
+  }
+  virtual CallbackInfrastructurePtr Build() {
+    throw std::runtime_error("Not yet Implemented");
+  }
 };
+
+using CallbackInfrastructureBuilderPtr =
+    std::shared_ptr<CallbackInfrastructureBuilder>;
+CallbackInfrastructureBuilderPtr getCallbackInfrastructureBuilder();
 
 #endif
