@@ -1,3 +1,5 @@
 
 # Ignore all folders named build in tdd-samples
 build/
+.vscode/
+.clangd/
