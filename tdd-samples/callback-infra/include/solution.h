@@ -13,7 +13,7 @@ using Duration = std::chrono::system_clock::duration;
 using CallbackFunction = std::function<void(void)>;
 
 class CallbackInfrastructure {
- public:
+public:
   using IdType = std::size_t;
   virtual IdType registerCallback(Duration duration,
                                   CallbackFunction callback) {
@@ -22,8 +22,8 @@ class CallbackInfrastructure {
   virtual void deregisterCallback(IdType id) {
     throw std::runtime_error("Not Implemented!");
   };
-  virtual ~CallbackInfrastructure(){};  // TODO: this means we need move & copy
-                                        // ctors too!
+  virtual ~CallbackInfrastructure(){}; // TODO: this means we need move & copy
+                                       // ctors too!
 };
 
 using CallbackInfrastructurePtr = std::shared_ptr<CallbackInfrastructure>;
@@ -31,9 +31,12 @@ using CallbackInfrastructurePtr = std::shared_ptr<CallbackInfrastructure>;
 inline auto Now() { return std::chrono::system_clock::now(); }
 
 class CallbackInfrastructureBuilder {
- public:
+public:
   virtual CallbackInfrastructureBuilder *anInstance() { return this; }
   virtual CallbackInfrastructureBuilder *WithDefaultTick() { return this; }
+  virtual CallbackInfrastructureBuilder *WithTick(Duration const &tick) {
+    return this;
+  }
   virtual CallbackInfrastructure BuildPrototype() {
     return CallbackInfrastructure{};
   }

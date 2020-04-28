@@ -100,8 +100,8 @@ TEST_CASE(
   CAPTURE(tick.count());
 
   Instant registeredAt, calledAt;
-  auto builder = getCallbackInfrastructureBuilder();
-  auto cIn = builder->Build();
+  auto build = getCallbackInfrastructureBuilder();
+  auto cIn = build->anInstance()->WithTick(tick)->Build();
 
   auto callbackId =
       cIn->registerCallback(period, [&calledAt]() { calledAt = Now(); });
@@ -140,8 +140,8 @@ TEST_CASE("CInShd shall fail to work for too small values of clock-ticks" *
   CAPTURE(tick.count());
 
   Instant registeredAt, calledAt;
-  auto builder = getCallbackInfrastructureBuilder();
-  auto cIn = builder->Build();
+  auto build = getCallbackInfrastructureBuilder();
+  auto cIn = build->anInstance()->WithTick(tick)->Build();
 
   auto callbackId =
       cIn->registerCallback(period, [&calledAt]() { calledAt = Now(); });
@@ -159,4 +159,15 @@ TEST_CASE("CInShd shall fail to work for too small values of clock-ticks" *
 }
 
 TEST_CASE("CInShd disallow registration when period is not multiple of tick" *
-          doctest::skip(SKIP) * doctest::may_fail()) {}
+          doctest::skip(SKIP) * doctest::may_fail()) {
+  using namespace std::chrono_literals;
+  auto tick = 10ms;
+  auto invalid_period = 125ms;
+  Instant registeredAt, calledAt;
+  auto build = getCallbackInfrastructureBuilder();
+  auto cIn = build->anInstance()->WithTick(tick)->Build();
+
+  CHECK_THROWS_AS(cIn->registerCallback(invalid_period,
+                                        [&calledAt]() { calledAt = Now(); }),
+                  std::runtime_error);
+}
