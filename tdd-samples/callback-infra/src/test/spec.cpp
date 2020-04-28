@@ -85,8 +85,10 @@ TEST_CASE("register returns diff id for same period diff callback") {
   std::shared_ptr<MockWorker> mock = std::make_shared<MockWorker>();
   Duration a_period{500000000};
   CallbackFunction a_cb = []() {};
-  CallbackFunction another_cb = []() {
-    std::cout << MakeId(Duration{200}, []() {}) << std::endl;
+  CallbackFunction another_cb = [=]() {
+    std::cout << std::hash<std::string>{}(std::to_string(a_period.count()) +
+                                          typeid(a_cb).name())
+              << std::endl;
   };
   std::unique_ptr<CallbackInfrastructure> sut =
       std::make_unique<CallbackInfrastructureImpl>([mock]() {

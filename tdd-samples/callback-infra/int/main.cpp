@@ -55,6 +55,11 @@ TEST_CASE("How to keep track of registrations") {
   auto half_sec = Duration{500ms};
   auto callback_fn = []() { std::cout << "Wonder!" << std::endl; };
   std::map<CallbackInfrastructure::IdType, WorkerPtr> data_store;
+  auto MakeId = [](Duration period,
+                   CallbackFunction cb) -> CallbackInfrastructure::IdType {
+    return std::hash<std::string>{}(std::to_string(period.count()) +
+                                    typeid(cb).name());
+  };
 
   WorkerPtr original_half{new WorkerImpl{}};
   CallbackInfrastructure::IdType id = MakeId(half_sec, callback_fn);
@@ -71,4 +76,4 @@ TEST_CASE("How to keep track of registrations") {
   CHECK(data_store.find(id)->second == original_one);
 }
 
-TEST_SUITE_END();  // "CallbackInfra integration scenario"
+TEST_SUITE_END(); // "CallbackInfra integration scenario"

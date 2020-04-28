@@ -23,7 +23,7 @@
 constexpr bool TEST_LEARNING{true};
 
 TEST_SUITE_BEGIN("Learning tests" * doctest::skip(!TEST_LEARNING));
-TEST_CASE("Making an idtype for identifying registrations") {
+TEST_CASE("Making an idtype for identifying registrations using hashes") {
   SUBCASE("Can make hash of a string") {
     std::string arbitrary_string{"Some text"};
     auto hasher = std::hash<std::string>{};
@@ -65,7 +65,7 @@ TEST_CASE("Making an idtype for identifying registrations") {
     auto f2 = []() {};
     auto f3 = []() { std::cout << "a very important action\n"; };
     auto hasher = std::hash<std::string>{};
-    auto make_hash = [&hasher](auto const& a, auto const& b) -> std::size_t {
+    auto make_hash = [&hasher](auto const &a, auto const &b) -> std::size_t {
       return hasher(std::to_string(a.count()) + typeid(b).name());
     };
 
@@ -83,21 +83,41 @@ TEST_CASE("Making an idtype for identifying registrations") {
 
     auto all_hashes = {d1f1, d1f2, d1f3, d2f1, d2f2, d2f3, d3f1, d3f2, d3f3};
     std::cout << "Size of all_hashes: " << all_hashes.size() << "\n";
-    for (auto const& name : all_hashes) {
+    for (auto const &name : all_hashes) {
       std::cout << name << std::endl;
     }
     std::set<decltype(d1f1)> duplicate_less(all_hashes.begin(),
                                             all_hashes.end());
     CHECK(all_hashes.size() == duplicate_less.size());
   }
-  SUBCASE("Can make a random ID") {
-    // Standard mersenne_twister_engine seeded with std::random_device
-    std::mt19937 generator(std::random_device{}());
-    std::uniform_int_distribution<CallbackInfrastructure::IdType> dis;
-    CallbackInfrastructure::IdType x = dis(generator);
-    CallbackInfrastructure::IdType y = dis(generator);
-    std::cout << "First: " << x << " Second: " << y << std::endl;
-    CHECK(x != y);
-  }
 }
-TEST_SUITE_END();  // Learning tests
+
+TEST_CASE("Can convert unique CallbackFunction objects into unique hash " *
+          doctest::should_fail(true)) {
+  // This test fails and hence invalidates the hashing approach for generating
+  // IDs.
+  using namespace std::chrono_literals;
+  Duration d1{500ms};
+  CallbackFunction a_callback = []() { std::cout << "A Callback"; };
+  CallbackFunction another_callback = []() { std::cout << "Another Callback"; };
+  auto make_hash = [](auto const &a, auto const &b) -> std::size_t {
+    auto hasher = std::hash<std::string>{};
+    return hasher(std::to_string(a.count()) + typeid(b).name());
+  };
+
+  auto hash1 = make_hash(d1, a_callback);
+  auto hash2 = make_hash(d1, another_callback);
+
+  CHECK(hash1 != hash2);
+}
+
+TEST_CASE("Can make a random ID") {
+  // Standard mersenne_twister_engine seeded with std::random_device
+  std::mt19937 generator(std::random_device{}());
+  std::uniform_int_distribution<CallbackInfrastructure::IdType> dis;
+  CallbackInfrastructure::IdType x = dis(generator);
+  CallbackInfrastructure::IdType y = dis(generator);
+  std::cout << "First: " << x << " Second: " << y << std::endl;
+  CHECK(x != y);
+}
+TEST_SUITE_END(); // Learning tests

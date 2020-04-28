@@ -10,7 +10,7 @@
 
 #define _CALLBACK_INFRA_IMPLEMENTATION_
 class Worker {
- public:
+public:
   virtual bool operator==(Worker const &other) const { return true; }
   virtual bool operator!=(Worker const &other) const { return false; }
   virtual void schedule(Duration period, CallbackFunction callback) {
@@ -21,7 +21,7 @@ class Worker {
 };
 
 class CallbackInfrastructureImpl : public CallbackInfrastructure {
- public:
+public:
   using WorkerPtr = std::shared_ptr<Worker>;
   using FactoryMethodType = std::function<WorkerPtr()>;
 
@@ -52,7 +52,7 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
     }
   }
 
- private:
+private:
   IdType MakeRandomId() { return distribution(generator); }
   FactoryMethodType factory_{};
   std::mt19937 generator{std::random_device{}()};
@@ -61,7 +61,7 @@ class CallbackInfrastructureImpl : public CallbackInfrastructure {
 };
 
 class AsyncWorker {
- public:
+public:
   void schedule(Duration period, CallbackFunction callback) {
     worker_fut = std::async([=]() {
       while (!stop) {
@@ -82,14 +82,13 @@ class AsyncWorker {
 
   ~AsyncWorker() { cancel(); }
 
- private:
+private:
   std::future<void> worker_fut;
   bool stop{false};
 };
 
-template <typename T = AsyncWorker>
-class WorkerImpl : public Worker {
- public:
+template <typename T = AsyncWorker> class WorkerImpl : public Worker {
+public:
   WorkerImpl() = default;
   WorkerImpl(T &&impl) : impl_(std::forward<T>(impl)) {}
   void schedule(Duration period, CallbackFunction callback) override {
@@ -97,16 +96,8 @@ class WorkerImpl : public Worker {
   };
   void cancel() override { impl_.cancel(); };
 
- private:
+private:
   T impl_;
 };
-
-CallbackInfrastructure::IdType MakeId(Duration period, CallbackFunction cb) {
-  return std::hash<std::string>{}(std::to_string(period.count()) +
-                                  typeid(cb).name());
-}
-
-// TODO: Put the Duration, Instant types in namespace and move the MakeId and
-// Now() functions there.
 
 #endif

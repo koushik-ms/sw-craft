@@ -12,6 +12,8 @@
 #include "doctest/trompeloeil.hpp"
 
 constexpr bool TEST_WORKER{true};
+constexpr double unitPeriodInSeconds{0.01};
+
 TEST_SUITE_BEGIN("Worker Unit tests" * doctest::skip(!TEST_WORKER));
 
 struct MockCallbackProvider {
@@ -25,21 +27,22 @@ struct MockCallbackProvider {
 };
 
 class WorkerShould {
- protected:
+protected:
   WorkerShould() {
     using namespace std::chrono_literals;
-    arbitrary_period = 10ms;
+    using std::chrono::duration_cast;
+    arbitrary_period = duration_cast<Duration>(unitPeriodInSeconds * 1s);
     arbitrary_wait_time = arbitrary_period + 1ms;
   }
   virtual ~WorkerShould() {}
   Duration arbitrary_period;
   Duration arbitrary_wait_time;
+  WorkerImpl<> worker{};
 };
 
-TEST_CASE_FIXTURE(WorkerShould, "schedule a callback with local lambda" *
-                                    doctest::timeout(2.0)) {
-  // TODO: Need a timeout on this test-case not to exceed 2.5 periods
-  auto worker = WorkerImpl{};
+TEST_CASE_FIXTURE(WorkerShould,
+                  "schedule a callback with local lambda" *
+                      doctest::timeout(2.5 * unitPeriodInSeconds)) {
   unsigned called{0};
   auto fn = [&called]() {
     std::cout << "Callback!" << std::endl;
@@ -54,7 +57,6 @@ TEST_CASE_FIXTURE(WorkerShould,
                   "schedule a callback with free function/ class member func" *
                       doctest::timeout(2.0)) {
   MockCallbackProvider mock;
-  auto worker = WorkerImpl{};
   auto memberFunc = std::bind(&MockCallbackProvider::doSomething, &mock);
   CHECK(!mock.didSomething);
   CHECK(mock.callCount == 0);
@@ -65,7 +67,6 @@ TEST_CASE_FIXTURE(WorkerShould,
 }
 
 TEST_CASE_FIXTURE(WorkerShould, "cancel the currently schedule callback") {
-  auto worker = WorkerImpl{};
   unsigned called{0};
   auto fn = [&called]() {
     std::cout << "Callback!" << std::endl;
@@ -82,7 +83,6 @@ TEST_CASE_FIXTURE(WorkerShould, "cancel the currently schedule callback") {
 
 TEST_CASE_FIXTURE(WorkerShould, "invoke Callback repeatedly until cancelled" *
                                     doctest::timeout(3.0)) {
-  auto worker = WorkerImpl{};
   unsigned called{0};
   unsigned multiple{3};
   auto fn = [&called]() {
@@ -97,11 +97,10 @@ TEST_CASE_FIXTURE(WorkerShould, "invoke Callback repeatedly until cancelled" *
 TEST_CASE_FIXTURE(WorkerShould,
                   "return from Schedule() immediately (within 1ms)") {
   using namespace std::chrono_literals;
-  auto worker = WorkerImpl{};
   auto before = Now();
   worker.schedule(arbitrary_period, []() {});
   auto after = Now();
   CHECK((after - before) <= 1ms);
 }
 
-TEST_SUITE_END();  // "Worker Unit Tests"
+TEST_SUITE_END(); // "Worker Unit Tests"
