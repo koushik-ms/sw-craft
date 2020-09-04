@@ -3,7 +3,7 @@ Mob programming is emerging as a technique well-suited for solving complex probl
 
 Can this technique help a scrum team get better at Test-Driven Development ? Or even learn how to do TDD ? In this post I want to focus on just that question.
 
-I had an opportunity to support several scrum teams get comfortable with using TDD in their day-2-day work and decided to try out using mobbing as a technique for the team to practice TDD. The teams had a wide range of experience with TDD and almost none of them had any experience with mobbing. What they did have, however, was a strong need to learn and apply test-driven development and a very open mind. The teams started with code katas and, since the sessions were rather short (90–120 mins) we were mostly using the strong-style mobbing technique. With time and when applying to their daily tasks the team gradually moved to less stricter styles of mobbing.
+I had an opportunity to support several scrum teams get comfortable with using TDD in their day-2-day work and decided to try out using mobbing as a technique for the team to practice TDD. The teams had a wide range of experience with TDD and almost none of them had any experience with mobbing. What they did have, however, was a strong need to learn and apply test-driven development and a very open mind. The teams started with code katas and, since the sessions were rather short (90–120 mins) we were mostly using the strong-style mobbing technique. Over time the team gradually moved to less stricter styles of mobbing.
 
 The approach turned out much better than I had hoped.
 
@@ -19,4 +19,4 @@ I personally feel that mobbing for a TDD code kata could be a good exercise for 
 2. These slides from the global day of Mobretreat have detailed information about the roles in strong-style mobbing. Mob mentality show episodes also useful information.
 3. If you would like to experience a mobbing session for yourself, I'd highly recommend attending one of the "Coding Saturdaze" sessions conducted by Coach Bob Allen. Bob does a fantastic job of making key insights from TDD and Mob programming available when it's most meaningful and I've learnt a lot whenever I mobbed with him.
 
-I'm eager to know how you have experimented with making TDD and other agile practices more accessible to development teams ? What resources have helped you and yout teams ? Feel free to share in a comment.
+I'm eager to know how you have experimented with making TDD and other agile practices more accessible to development teams ? What resources have helped you and your teams ? Feel free to share in a comment.
