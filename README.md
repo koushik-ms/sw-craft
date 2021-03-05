@@ -7,4 +7,4 @@ This repository is a collection of code and information about various software c
 
 It contains e.g., TDD samples, a collection of TDD Kata outputs.
 
-
+It also contains some articles/ posts about various software craftsmanship topics that I write/ want to write.
